@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <link rel="stylesheet" type="text/css" href="main.css">
+
+    <script src="./node_modules/web3/dist/web3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.34/dist/web3.js"></script>
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+
+</head>
+<body>
+    <div class="container">
+
+        <h1>Smart Contract</h1>
+
+        <h2 id="blockchain"></h2>
+
+        <label for="MinHumidity" class="col-lg-2 control-label">MinHumidity</label>
+        <input id="MinHumidity" type="text">
+
+        <label for="MaxHumidity" class="col-lg-2 control-label">MaxHumidity</label>
+        <input id="MaxHumidity" type="text">
+
+        <label for="MinTemp" class="col-lg-2 control-label">MinTemp</label>
+        <input id="MinTemp" type="text">
+
+        <label for="MaxTemp" class="col-lg-2 control-label">MaxTemp</label>
+        <input id="MaxTemp" type="text">
+
+        <button id="button">SetRange</button>
+
+
+    </div>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script>
+
+    //const Web3= require('web3');
+    if(typeof web3!== 'undefined'){
+        web3=new Web3(web3.currentProvider);
+    }else{  
+    web3=new Web3(new Web3.providers.HttpProvider("http://localhost:8545")); //https://ropsten.infura.io
+    }
+
+    //var web3= new Web3(new Web3.providers.HttpProvider(RPC_ENDPOINT));
+
+    web3.eth.defaultAccount= web3.eth.accounts[0];
+
+    var abi=([
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "Humidity",
+				"type": "int8"
+			}
+		],
+		"name": "SetHumidity",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "Temp",
+				"type": "int8"
+			}
+		],
+		"name": "SetTemp",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "ComplianceDetailH",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "ComplianceDetailT",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "ComplianceSensorReadingH",
+		"outputs": [
+			{
+				"name": "",
+				"type": "int8"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "ComplianceSensorReadingT",
+		"outputs": [
+			{
+				"name": "",
+				"type": "int8"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "ComplianceSensorTypeH",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint8"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "ComplianceSensorTypeT",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint8"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "ComplianceStatusH",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "ComplianceStatusT",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "get",
+		"outputs": [
+			{
+				"name": "",
+				"type": "int256"
+			},
+			{
+				"name": "",
+				"type": "int256"
+			},
+			{
+				"name": "",
+				"type": "int256"
+			},
+			{
+				"name": "",
+				"type": "int256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_MinHumidity",
+				"type": "int8"
+			},
+			{
+				"name": "_MaxHumidity",
+				"type": "int8"
+			},
+			{
+				"name": "_MinTemp",
+				"type": "int8"
+			},
+			{
+				"name": "_MaxTemp",
+				"type": "int8"
+			}
+		],
+		"name": "set",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	}
+]);
+
+    var address="0x53E3c9F909E405e4fa572ED9F3c18A2d35a2a961";
+
+        var SimpleContract= new web3.eth.Contract(abi,address);
+
+//var SimpleContractInstance = SimpleContract.at(address);
+
+SimpleContract.get(function(error, result){
+    if(!error)
+        {
+            $("#blockchain").html(result[0]+' ('+result[1]+' ('+result[2]+' ('+result[3]);
+            console.log(result);
+        }
+    else
+        console.error(error);
+});
+
+$("#button").click(function() {
+    SimpleContract.set($("#MinHumidity").val(), $("#MaxHumidity").val(), $("#MinTemp").val(), $("#MaxTemp").val());
+});
+</script>
+</body>
+</html>
